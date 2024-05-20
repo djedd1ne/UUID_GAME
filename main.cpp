@@ -39,27 +39,32 @@ int main(){
     int score = 0;
 
     std::srand(static_cast<unsigned int>(std::time(nullptr))); // Seed random generator
-    std::list<boost::uuids::uuid> uuids = generate();
-    char randomChar = selectRandomCharacter();
-    //std::cout << "Random character: " << randomChar << std::endl; // Print random character
-    removeUUIDsWithCharacter(uuids, randomChar);
-    std::cout << "Remaining UUIDs after removing those containing [" << randomChar << "]:" << std::endl;
-    for (const auto& uuid : uuids) {
-        std::cout << boost::uuids::to_string(uuid) << std::endl;
+
+    while (true) {
+        std::list<boost::uuids::uuid> uuids = generate();
+        char randomChar = selectRandomCharacter();
+        //std::cout << "Random character: " << randomChar << std::endl; // Print random character
+        removeUUIDsWithCharacter(uuids, randomChar);
+        std::cout << "Remaining UUIDs after removing those containing [" << randomChar << "]:" << std::endl;
+        for (const auto& uuid : uuids) {
+            std::cout << boost::uuids::to_string(uuid) << std::endl;
+        }
+
+        std::cout << "\nPLEASE ENTER A CHARACTER [09-af]" << std::endl;
+        auto start = std::chrono::steady_clock::now(); // Capture start time
+        std::cin >> guess; // Get input
+        auto end = std::chrono::steady_clock::now(); // Capture end time
+        auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+        std::cout << "Elaspsed time in seconds : " << elapsedSeconds << std::endl;
+
+        if ((guess == randomChar || std::tolower(guess) == randomChar) && elapsedSeconds <= 30) {
+                score += 30 - elapsedSeconds;
+                std::cout << "Correct guess! Your score: " << score << std::endl;
+        } else {
+            std::cout << "Game Over! Your final score: " << score << std::endl;
+            break;
+        }
     }
 
-    std::cout << "\nPLEASE ENTER A CHARACTER [09-af]" << std::endl;
-    auto start = std::chrono::steady_clock::now(); // Capture start time
-    std::cin >> guess; // Get input
-    auto end = std::chrono::steady_clock::now(); // Capture end time
-    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-    std::cout << "Elaspsed time in seconds : " << elapsedSeconds << std::endl;
-
-    if ((guess == randomChar || std::tolower(guess) == randomChar) && elapsedSeconds <= 30) {
-            score += 30 - elapsedSeconds;
-            std::cout << "Correct guess! Your score: " << score << std::endl;
-    } else {
-        std::cout << "Game Over! Your final score: " << score << std::endl;
-    }
     return 0;
 }
