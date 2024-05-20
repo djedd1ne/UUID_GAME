@@ -58,7 +58,7 @@ int main(){
         char randomChar = selectRandomCharacter();
         //std::cout << "Random character: " << randomChar << std::endl; // Print random character
         removeUUIDsWithCharacter(uuids, randomChar);
-        std::cout << "Remaining UUIDs after removing those containing [" << randomChar << "]:" << std::endl;
+        std::cout << "Remaining UUIDs after removing those containing random character" << std::endl;
         for (const auto& uuid : uuids) {
             std::cout << boost::uuids::to_string(uuid) << std::endl;
         }
@@ -75,9 +75,8 @@ int main(){
 
         running = false;
         timerThread.join();
-        
+
         auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-        std::cout << "Elaspsed time in seconds : " << elapsedSeconds << std::endl;
 
         if ((guess == randomChar || std::tolower(guess) == randomChar) && elapsedSeconds <= 30) {
                 score += 30 - elapsedSeconds;
