@@ -4,6 +4,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <list>
 #include <chrono>
+#include <thread>
+#include <atomic>
 
 std::list<boost::uuids::uuid> generate() {
     std::list<boost::uuids::uuid> uuids;
@@ -34,6 +36,17 @@ void removeUUIDsWithCharacter(std::list<boost::uuids::uuid>& uuids, char charact
     });
 }
 
+void displayTimeLeft(std::atomic<bool>& running, std::atomic<int>& remainingTime) {
+    while (running && remainingTime > 0) {
+        std::cout << "\rTime left: " << remainingTime << " seconds ";
+        std::flush(std::cout);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        --remainingTime;
+    }
+    if (remainingTime == 0)
+        std::cout << "\nTime's Up, Enter a character to proceed" << std::endl; // Move to a new line after countdown ends
+}
+
 int main(){
     char guess;
     int score = 0;
@@ -50,10 +63,19 @@ int main(){
             std::cout << boost::uuids::to_string(uuid) << std::endl;
         }
 
+        std::atomic<bool> running(true);
+        std::atomic<int> remainingTime(30);
+        std::thread timerThread(displayTimeLeft, std::ref(running), std::ref(remainingTime));
+
+
         std::cout << "\nPLEASE ENTER A CHARACTER [09-af]" << std::endl;
         auto start = std::chrono::steady_clock::now(); // Capture start time
         std::cin >> guess; // Get input
         auto end = std::chrono::steady_clock::now(); // Capture end time
+
+        running = false;
+        timerThread.join();
+        
         auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
         std::cout << "Elaspsed time in seconds : " << elapsedSeconds << std::endl;
 
