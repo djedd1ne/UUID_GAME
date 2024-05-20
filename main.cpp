@@ -3,6 +3,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <list>
+#include <chrono>
 
 std::list<boost::uuids::uuid> generate() {
     std::list<boost::uuids::uuid> uuids;
@@ -34,15 +35,24 @@ void removeUUIDsWithCharacter(std::list<boost::uuids::uuid>& uuids, char charact
 }
 
 int main(){
-    std::srand(static_cast<unsigned int>(std::time(nullptr))); // seed random generator
+    char guess;
+    int score = 0;
+
+    std::srand(static_cast<unsigned int>(std::time(nullptr))); // Seed random generator
     std::list<boost::uuids::uuid> uuids = generate();
     char randomChar = selectRandomCharacter();
-    //std::cout << "Random character: " << randomChar << std::endl; // print random character
+    //std::cout << "Random character: " << randomChar << std::endl; // Print random character
     removeUUIDsWithCharacter(uuids, randomChar);
     std::cout << "Remaining UUIDs after removing those containing [" << randomChar << "]:" << std::endl;
     for (const auto& uuid : uuids) {
         std::cout << boost::uuids::to_string(uuid) << std::endl;
     }
 
+    auto start = std::chrono::steady_clock::now(); // Capture start time
+    std::cin >> guess; // Get input
+    auto end = std::chrono::steady_clock::now(); // Capture end time
+    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    std::cout << "Elaspsed time in seconds : " << elapsedSeconds << std::endl;
+    
     return 0;
 }
