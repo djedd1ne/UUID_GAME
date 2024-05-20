@@ -20,11 +20,29 @@ char selectRandomCharacter() {
     return characters[index];
 }
 
+bool containsCharacter(const boost::uuids::uuid& uuid, char character) {
+    bool ret;
+    std::string str = boost::uuids::to_string(uuid);
+    ret = str.find(character) != std::string::npos;
+    return  ret;
+}
+
+void removeUUIDsWithCharacter(std::list<boost::uuids::uuid>& uuids, char character) {
+    uuids.remove_if([&character](const boost::uuids::uuid& uuid) { // Use lambda expression
+        return containsCharacter(uuid, character);
+    });
+}
+
 int main(){
     std::srand(static_cast<unsigned int>(std::time(nullptr))); // seed random generator
     std::list<boost::uuids::uuid> uuids = generate();
     char randomChar = selectRandomCharacter();
-    std::cout << "Random character: " << randomChar << std::endl; // print random character
+    //std::cout << "Random character: " << randomChar << std::endl; // print random character
+    removeUUIDsWithCharacter(uuids, randomChar);
+    std::cout << "Remaining UUIDs after removing those containing [" << randomChar << "]:" << std::endl;
+    for (const auto& uuid : uuids) {
+        std::cout << boost::uuids::to_string(uuid) << std::endl;
+    }
 
     return 0;
 }
